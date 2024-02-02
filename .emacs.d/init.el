@@ -1,7 +1,7 @@
 (require 'package)
 
 (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/") t)
-(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/") t)
+;; (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/") t)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 ;; (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
@@ -24,7 +24,7 @@
 (require 'monokai-theme)
 (load-theme 'monokai)
 
-(set-default-font "Source Code Pro")
+;; (set-default-font "Source Code Pro")
 (set-face-attribute 'default nil :height 90)
 
 ;; handy plugin for moving entire lines up/down (like C-S-ArrowUp/ArrowDown in Sublime Text)
@@ -91,9 +91,6 @@
 
 ;; stop asking full yes or no and be fine with y/n instead
 (fset 'yes-or-no-p 'y-or-n-p)
-
-;; /docker:hash:/usr/include/boost/.. access inside docker
-(require 'docker-tramp)
 
 (global-set-key (kbd "C-c r") 'revert-buffer)
 
