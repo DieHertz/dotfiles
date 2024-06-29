@@ -104,3 +104,5 @@
 (add-to-list 'auto-mode-alist '("\\.c\\.jinja2\\'" . c++-mode))
 (add-to-list 'auto-mode-alist '("\\.cpp\\.jinja2\\'" . c++-mode))
 (add-to-list 'auto-mode-alist '("\\.py\\.jinja2\\'" . python-mode))
+
+(require 'perfect-margin)
