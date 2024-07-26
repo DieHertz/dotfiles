@@ -106,3 +106,4 @@
 (add-to-list 'auto-mode-alist '("\\.py\\.jinja2\\'" . python-mode))
 
 (require 'perfect-margin)
+(perfect-margin-mode)

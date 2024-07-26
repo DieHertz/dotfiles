@@ -2,7 +2,7 @@
 
 (defconst required-packages
   '(monokai-theme move-text fiplr multiple-cursors
-		  expand-region auto-complete))
+		  expand-region auto-complete projectile flatbuffers-mode perfect-margin))
 
 (defun required-packages-installed-p ()
   (loop for p in required-packages
