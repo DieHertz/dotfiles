@@ -47,10 +47,10 @@
 (setq *grizzl-read-max-results* 20)
 
 (require 'expand-region)
-;; there be smart function to alternate between expand-region and mc/mark-next-like-this
+;; alternate between expand-region and mc/mark-next-like-this
 (defun expand-or-mark-next-like-this () (interactive) (if (use-region-p)
-	      (mc/mark-next-like-this 1)
-	    (er/expand-region 1)))
+	                                                        (mc/mark-next-like-this 1)
+	                                                      (er/expand-region 1)))
 (global-set-key (kbd "C->") 'expand-or-mark-next-like-this)
 
 ;; incremental search auto wrap
@@ -73,8 +73,8 @@
 (setq ido-enable-flex-matching t)
 
 (setq-default c-basic-offset 2
-    tab-width 2
-    indent-tabs-mode nil)
+              tab-width 2
+              indent-tabs-mode nil)
 (setq tab-stop-list (number-sequence 2 100 2))
 (setq inhibit-startup-screen t)
 (menu-bar-mode 0)
@@ -107,3 +107,45 @@
 
 (require 'perfect-margin)
 (perfect-margin-mode)
+
+(defun remove-prefix (prefix string)
+  (if (string= (substring string 0 (length prefix)) prefix)
+      (substring string (length prefix))
+    string))
+
+(defun remove-suffix (suffix string)
+  (let* ((suffix_len (length suffix))
+         (suffix_pos (- (length string) suffix_len)))
+    (if (string= (substring string suffix_pos) suffix)
+        (substring string 0 suffix_pos)
+      string)))
+
+(defun print-github-link ()
+  "Print a link to the GitHub tree of the current buffer"
+  (interactive)
+  (let ((filename (buffer-file-name (current-buffer))))
+    (if
+        (eq (vc-backend filename) 'Git)
+        (let* ((git_root (expand-file-name (vc-git-root default-directory)))
+               (path (remove-prefix git_root filename))
+               (branch (string-trim (vc-git--run-command-string nil "branch" "--show-current")))
+               (commit (string-trim (vc-git--run-command-string nil "rev-parse" "HEAD")))
+               (branch_or_commit (if (string-empty-p branch) commit branch))
+               (remote (string-trim (vc-git--run-command-string nil "remote")))
+               (remote_url (string-trim (vc-git--run-command-string nil "remote" "get-url" remote)))
+               (organization_and_repo (if (string-prefix-p "https://" remote_url)
+                                          (remove-suffix "/" (remove-prefix "https://github.com/" remote_url))
+                                        (remove-suffix ".git" (remove-prefix "git@github.com:" remote_url))))
+               (line (number-to-string (line-number-at-pos))))
+          (princ
+           (concat "https://github.com/"
+                   organization_and_repo
+                   "/blob/"
+                   branch_or_commit
+                   "/"
+                   path
+                   "#L"
+                   line) t))
+      (princ "File is not in Git")
+      )))
+(global-set-key (kbd "C-c g") 'print-github-link)

@@ -5,9 +5,11 @@
       '(
         c-electric-colon
         c-electric-delete-forward
+        c-electric-lt-gt
         c-electric-paren
         c-electric-semi&comma
         c-electric-slash
+        c-electric-star
         c-hungry-delete-forward
         c-indent-line-or-region
         indent-for-tab-command
