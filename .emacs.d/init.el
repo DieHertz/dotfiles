@@ -136,7 +136,8 @@
                (organization_and_repo (if (string-prefix-p "https://" remote_url)
                                           (remove-suffix "/" (remove-prefix "https://github.com/" remote_url))
                                         (remove-suffix ".git" (remove-prefix "git@github.com:" remote_url))))
-               (line (number-to-string (line-number-at-pos))))
+               (line_start (number-to-string (line-number-at-pos (if (use-region-p) (region-beginning) nil))))
+               (line_end (number-to-string (line-number-at-pos (region-end)))))
           (princ
            (concat "https://github.com/"
                    organization_and_repo
@@ -145,7 +146,12 @@
                    "/"
                    path
                    "#L"
-                   line) t))
+                   line_start
+                   (if (use-region-p)
+                       (concat
+                        "-L"
+                        line_end)
+                     "")) t))
       (princ "File is not in Git")
       )))
 (global-set-key (kbd "C-c g") 'print-github-link)
