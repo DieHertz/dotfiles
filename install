@@ -4,9 +4,11 @@ rm -rf ~/.emacs.d 2>&1 > /dev/null
 rm -rf ~/.tmux.conf 2>&1 > /dev/null
 rm -rf ~/.gitconfig 2>&1 > /dev/null
 
-ln -s ~/dotfiles/.emacs.d ~
-ln -s ~/dotfiles/.tmux.conf ~
-ln -s ~/dotfiles/.gitconfig ~
+DOTFILES_DIR=`dirname $0`
+
+ln -s ${DOTFILES_DIR}/.emacs.d ~
+ln -s ${DOTFILES_DIR}/.tmux.conf ~
+ln -s ${DOTFILES_DIR}/.gitconfig ~
 
 cat << EOF >> ~/.zshrc
 
