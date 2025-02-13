@@ -23,4 +23,5 @@
         Buffer-menu-execute
         c-toggle-electric-state
         ido-find-file
+        print-github-link
         ))
