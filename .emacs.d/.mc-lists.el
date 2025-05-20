@@ -15,6 +15,7 @@
         indent-for-tab-command
         kill-region
         tab-to-tab-stop
+        transpose-words
         ))
 
 (setq mc/cmds-to-run-once
