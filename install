@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/usr/bin/env bash
+set -euo pipefail
 
 # Resolve the absolute path to this script (dotfiles repo root)
 DOTFILES_DIR="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
@@ -13,14 +14,14 @@ mkdir -p ~/.config/htop
 ln -sf "${DOTFILES_DIR}/htoprc" ~/.config/htop
 
 echo "📦 Updating package lists..."
-sudo apt update
+sudo apt update -qq
 echo "📦 Installing Emacs and time..."
-sudo apt install -y emacs time
+sudo apt install -y -qq emacs time
 
 # Preload Emacs packages by running it in batch mode
 # This triggers init.el without opening the GUI
 echo "⚙️  Bootstrapping Emacs packages..."
-emacs --batch -l ~/.emacs.d/init.el
+emacs --batch -l ~/.emacs.d/init.el > /dev/null 2>&1
 
 # Append Zsh aliases and env vars if .zshrc exists
 # NOTE: This assumes ~/.zshrc is not under dotfiles control
