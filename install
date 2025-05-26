@@ -1,27 +1,15 @@
 #!/bin/sh
 
-rm -rf ~/.emacs.d 2>&1 > /dev/null
-rm -rf ~/.tmux.conf 2>&1 > /dev/null
-rm -rf ~/.gitconfig 2>&1 > /dev/null
+DOTFILES_DIR="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
 
-DOTFILES_DIR=`dirname $0`
+ln -sf "${DOTFILES_DIR}/.emacs.d" ~
+ln -sf "${DOTFILES_DIR}/.tmux.conf" ~
+ln -sf "${DOTFILES_DIR}/.gitconfig" ~
 
-ln -s ${DOTFILES_DIR}/.emacs.d ~
-ln -s ${DOTFILES_DIR}/.tmux.conf ~
-ln -s ${DOTFILES_DIR}/.gitconfig ~
+mkdir -p ~/.config/htop
+ln -sf "${DOTFILES_DIR}/htoprc" ~/.config/htop
 
 sudo apt update
 sudo apt install -y emacs time
 
-cat << EOF >> ~/.zshrc
-alias time='/usr/bin/time -f "Elapsed: %E, User: %U, Sys: %S, CPU: %P, Max RSS: %M KB"'
-alias grep='grep --color=auto'
-alias htop='htop --sort-key PERCENT_MEM'
-alias du1='du -h --max-depth=1'
-alias df='df -h'
-alias psg='ps aux | grep -v grep | grep -i -e VSZ -e'
-alias k9='kill -9'
-
-export EDITOR=emacs
-export GIT_EDITOR=emacs
-EOF
+cat "${DOTFILES_DIR}/.zshrc" >> ~/.zshrc
