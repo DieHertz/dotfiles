@@ -22,6 +22,7 @@
 
 ;; my once-and-for-all favourite theme
 (require 'monokai-theme)
+(setq custom-safe-themes t)
 (load-theme 'monokai)
 
 ;; (set-default-font "Source Code Pro")
