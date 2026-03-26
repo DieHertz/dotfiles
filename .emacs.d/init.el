@@ -156,3 +156,7 @@
       (princ "File is not in Git")
       )))
 (global-set-key (kbd "C-c g") 'print-github-link)
+
+
+;; allow stepping over CamelCase word parts with M-f/M-b
+(global-subword-mode 1)

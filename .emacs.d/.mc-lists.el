@@ -12,6 +12,8 @@
         c-electric-star
         c-hungry-delete-forward
         c-indent-line-or-region
+        electric-newline-and-maybe-indent
+        end-of-buffer
         indent-for-tab-command
         kill-region
         tab-to-tab-stop
