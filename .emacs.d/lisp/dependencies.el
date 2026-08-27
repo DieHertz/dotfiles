@@ -1,8 +1,8 @@
 (require 'cl)
 
 (defconst required-packages
-  '(monokai-theme move-text fiplr multiple-cursors
-		  expand-region auto-complete projectile flatbuffers-mode perfect-margin nord-theme solarized-theme nordic-night-theme))
+  '(monokai-theme move-text multiple-cursors
+		  expand-region auto-complete projectile flatbuffers-mode perfect-margin nord-theme solarized-theme nordic-night-theme flx-ido))
 
 (defun required-packages-installed-p ()
   (loop for p in required-packages

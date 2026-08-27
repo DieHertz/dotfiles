@@ -44,8 +44,77 @@
 (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
 (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 (global-set-key (kbd "C-c f") 'projectile-find-file)
+;; Projectile no longer dispatches to ido on its own (it reads through plain
+;; `completing-read', which `ido-everywhere' does not hook), so route its
+;; completion through ido explicitly.
+(setq projectile-completion-system
+      (lambda (prompt choices)
+        (ido-completing-read prompt choices)))
 
-(setq *grizzl-read-max-results* 20)
+;; Sublime-style fuzzy scoring for ido: "tape/meta.fbs" finds
+;; library/tape/protocol/meta.fbs, while scatter matches over long paths
+;; (e.g. "abc.cpp" onto "av/library/.../bc.cpp") sink to the bottom.
+(require 'flx-ido)
+(flx-ido-mode 1)
+;; rank and highlight at any candidate count (the av monorepo has ~41k
+;; files); scoring that many takes ~0.5s, tolerable because the
+;; abort-on-input advice below keeps it off the typing path
+(setq flx-ido-threshold 50000)
+
+;; never let candidate matching block a keystroke: a key arriving while the
+;; match recomputes aborts it (the previous list stays visible for that
+;; instant) and that same key's own redisplay recomputes from scratch, so
+;; only the final pause pays the full matching cost.  Known small race: RET
+;; hit mid-recompute selects from the previous list.
+(define-advice ido-set-matches (:around (orig) abort-on-input)
+  (while-no-input (funcall orig)))
+;; ido marks the candidate RET selects by replacing its face property
+;; outright, which wipes flx's per-character match highlights on it; keep
+;; ido's faces off and paint the selection bar in the `ido-completions'
+;; advice below instead
+(setq ido-use-faces nil)
+;; region-gray bar behind the selected candidate, the same look as a buffer
+;; selection, with its plain text tinted green; the yellow match-character
+;; highlights stay on top (the advice below layers this face beneath them)
+(set-face-attribute 'ido-first-match nil
+                    :foreground monokai-green
+                    :background monokai-highlight
+                    :weight 'unspecified)
+;; monokai themes flx's highlight as plain blue, which doesn't stand out;
+;; use the theme's yellow (as ido-first-match had) and bold instead
+(with-eval-after-load 'flx
+  (set-face-attribute 'flx-highlight-face nil
+                      :foreground monokai-yellow
+                      :weight 'bold
+                      :underline nil))
+
+;; show the typed pattern in the same yellow as its matches in the
+;; candidates, so it stands out from the white candidate list
+(defun ido-highlight-input ()
+  (when (bound-and-true-p ido-cur-item)
+    (face-remap-add-relative 'default :foreground monokai-yellow :weight 'bold)))
+(add-hook 'minibuffer-setup-hook 'ido-highlight-input)
+
+;; the face remap above would also repaint the candidate list (ido inserts
+;; it into the minibuffer as plain text when `ido-use-faces' is nil), so pin
+;; the list to the theme's regular foreground; flx's per-character
+;; highlights carry their own face and stay on top
+;; the advice is named so re-evaluating init.el replaces it instead of
+;; stacking another copy alongside the old one
+(define-advice ido-completions (:filter-return (completions) monokai-candidate-faces)
+  ;; the selection bar goes on first so it sits below the flx highlights
+  ;; but above the foreground pin added after it: matched characters stay
+  ;; yellow, the rest of the selected candidate turns green
+  (when ido-matches
+    (let* ((first-match (ido-name (car ido-matches)))
+           (start (string-search first-match completions)))
+      (when start
+        (add-face-text-property start (+ start (length first-match))
+                                'ido-first-match t completions))))
+  (add-face-text-property 0 (length completions)
+                          (list :foreground monokai-foreground :weight 'normal)
+                          t completions)
+  completions)
 
 (require 'expand-region)
 ;; alternate between expand-region and mc/mark-next-like-this
